@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>uSupport.uSync</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+		<ItemGroup>
+				<PackageReference Include="uSupport" Version="2.1.0" />
+				<PackageReference Include="uSync.Core" Version="13.0.0" />
+				<PackageReference Include="uSync.BackOffice" Version="13.0.0" />
+		</ItemGroup>
+
+		<PropertyGroup>
+				<PackageId>uSupport.uSync</PackageId>
+				<Version>1.0.0</Version>
+				<Title>uSupport uSync</Title>
+				<Authors>Lantzify</Authors>
+				<Owners>Lantzify</Owners>
+				<PackageIcon>usupport.png</PackageIcon>
+				<PackageLicenseExpression>MIT</PackageLicenseExpression>
+				<PackageProjectUrl>https://github.com/Lantzify/uSupport</PackageProjectUrl>
+				<PackageTags>umbraco umbraco-marketplace uSupport support</PackageTags>
+				<RepositoryUrl>https://github.com/Lantzify/uSupport</RepositoryUrl>
+				<Description>uSync serializers for uSupport</Description>
+				<Summary>uSync serializers for uSupport</Summary>
+				<EmbedUntrackedSources>true</EmbedUntrackedSources>
+				<IncludeSymbols>true</IncludeSymbols>
+				<PackageReadmeFile>umbraco-marketplace-readme.md</PackageReadmeFile>
+				<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+				<ContentTargetFolders>content</ContentTargetFolders>
+
+				<PackageOutputPath>build/Release</PackageOutputPath>
+
+		</PropertyGroup>
+
+		<ItemGroup>
+				<None Include="..\umbraco-marketplace-readme.md" Pack="true" PackagePath="\" />
+				<None Include="..\usupport.png">
+						<Pack>True</Pack>
+						<PackagePath></PackagePath>
+				</None>
+		</ItemGroup>
+
+</Project>
