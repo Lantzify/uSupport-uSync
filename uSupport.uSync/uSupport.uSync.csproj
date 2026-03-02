@@ -21,7 +21,7 @@
 				<Owners>Lantzify</Owners>
 				<PackageIcon>usupport.png</PackageIcon>
 				<PackageLicenseExpression>MIT</PackageLicenseExpression>
-				<PackageProjectUrl>https://github.com/Lantzify/uSupport</PackageProjectUrl>
+				<PackageProjectUrl>https://github.com/Lantzify/uSupport-uSync</PackageProjectUrl>
 				<PackageTags>umbraco umbraco-marketplace uSupport support uSync</PackageTags>
 				<RepositoryUrl>https://github.com/Lantzify/uSupport-uSync</RepositoryUrl>
 				<Description>uSync serializers for uSupport</Description>

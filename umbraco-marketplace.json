@@ -15,6 +15,7 @@
     "DiscussionForumUrl": "https://our.umbraco.com/packages/backoffice-extensions/usupport/usupport-support/",
     "DocumentationUrl": "https://Lantzify.github.io/uSupport-documentation/",
     "IssueTrackerUrl": "https://github.com/Lantzify/uSupport-uSync/issues",
+    "IsSubPackageOf": "uSupport",
     "PackagesByAuthor": [
         "AutoDictionaries",
         "AutoBlockList",
