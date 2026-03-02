@@ -56,9 +56,9 @@ namespace uSupport_uSync.Serializers
 				PropertyView = node.Element("PropertyView")?.Value ?? string.Empty
 			};
 
+			if (item == null)
+				item = _ticketTypeService.Create(schema);
 
-			item = item == null ? _ticketTypeService.Create(schema) :
-									_ticketTypeService.Update(schema);
 			return SyncAttempt<uSupportTicketType>.Succeed(item.Name, item, ChangeType.Import, Array.Empty<uSyncChange>());
 		}
 

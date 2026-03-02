@@ -53,9 +53,8 @@ namespace uSupport_uSync.Serializers
 				Active = node.Element("Active")?.ValueOrDefault(true) ?? true
 			};
 
-
-			item = item == null ? _ticketStatusService.Create(schema) :
-									_ticketStatusService.Update(schema);
+			if (item == null)
+				item = _ticketStatusService.Create(schema);
 
 			return SyncAttempt<uSupportTicketStatus>.Succeed(item.Name, item, ChangeType.Import, Array.Empty<uSyncChange>());
 		}
