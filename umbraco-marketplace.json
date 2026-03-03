@@ -22,5 +22,10 @@
         "uSupport",
         "UmbracoNaviHideIcon"
     ],
-    "Screenshots": []
+    "Screenshots": [
+        {
+            "ImageUrl": "https://raw.githubusercontent.com/Lantzify/uSupport-uSync/refs/heads/master/usync.png",
+            "Caption": "Dashboard"   
+        }
+    ]
 }
