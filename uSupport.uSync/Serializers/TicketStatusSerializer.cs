@@ -40,11 +40,10 @@ namespace uSupport_uSync.Serializers
 		{
 			var item = FindItem(node);
 
-			var schema = new uSupport.Migrations.Schemas.uSupportTicketStatusSchema
+			var dto = new uSupportTicketStatus
 			{
 				Id = item == null ? node.GetKey() : item.Id,
 				Alias = node.GetAlias(),
-
 				Name = node.Element("Name")?.Value ?? string.Empty,
 				Color = node.Element("Color")?.Value ?? string.Empty,
 				Icon = node.Element("Icon")?.Value ?? string.Empty,
@@ -53,8 +52,8 @@ namespace uSupport_uSync.Serializers
 				Active = node.Element("Active")?.ValueOrDefault(true) ?? true
 			};
 
-			if (item == null)
-				item = _ticketStatusService.Create(schema);
+			item = item == null ? _ticketStatusService.Create(dto.ConvertDtoToSchema()) : dto;
+
 
 			return SyncAttempt<uSupportTicketStatus>.Succeed(item.Name, item, ChangeType.Import, Array.Empty<uSyncChange>());
 		}

@@ -41,7 +41,7 @@ namespace uSupport_uSync.Serializers
 		{
 			var item = FindItem(node);
 
-			var schema = new uSupport.Migrations.Schemas.uSupportTicketTypeSchema
+			var dto = new uSupportTicketType
 			{
 				Id = item == null ? node.GetKey() : item.Id,
 				Alias = node.GetAlias(),
@@ -56,8 +56,7 @@ namespace uSupport_uSync.Serializers
 				PropertyView = node.Element("PropertyView")?.Value ?? string.Empty
 			};
 
-			if (item == null)
-				item = _ticketTypeService.Create(schema);
+			item = item == null ? _ticketTypeService.Create(dto.ConvertDtoToSchema()) : dto;
 
 			return SyncAttempt<uSupportTicketType>.Succeed(item.Name, item, ChangeType.Import, Array.Empty<uSyncChange>());
 		}
