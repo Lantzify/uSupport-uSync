@@ -26,4 +26,5 @@ jobs:
         with:
           user: ${{secrets.NUGET_USER}}
       - name: Publish the package
-        run: dotnet nuget push uSupport.uSync/build/Release/uSupport.uSync.${{github.ref_name}}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.PRIVATE_NUGET_KEY }}
+        run: dotnet nuget push uSupport.uSync/build/Release/uSupport.uSync.${{github.ref_name}}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{steps.login.outputs.NUGET_API_KEY}}
+        
