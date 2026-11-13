@@ -21,7 +21,7 @@ namespace uSupport_uSync.Serializers
 		}
 
 
-		protected override SyncAttempt<XElement> SerializeCore(uSupportTicketStatus item, SyncSerializerOptions options)
+		protected override Task<SyncAttempt<XElement>> SerializeCoreAsync(uSupportTicketStatus item, SyncSerializerOptions options)
 		{
 			var node = new XElement("uSupportTicketStatus",
 				new XAttribute("Key", item.Id),
@@ -33,12 +33,12 @@ namespace uSupport_uSync.Serializers
 				new XElement("Default", item.Default),
 				new XElement("Active", item.Active));
 
-			return SyncAttempt<XElement>.Succeed(item.Name, node, typeof(uSupportTicketStatus), ChangeType.Export);
+			return Task.FromResult(SyncAttempt<XElement>.Succeed(item.Name, node, typeof(uSupportTicketStatus), ChangeType.Export));
 		}
 
-		protected override SyncAttempt<uSupportTicketStatus> DeserializeCore(XElement node, SyncSerializerOptions options)
+		protected override async Task<SyncAttempt<uSupportTicketStatus>> DeserializeCoreAsync(XElement node, SyncSerializerOptions options)
 		{
-			var item = FindItem(node);
+			var item = await FindItemAsync(node);
 
 			var dto = new uSupportTicketStatus
 			{
@@ -58,12 +58,11 @@ namespace uSupport_uSync.Serializers
 			return SyncAttempt<uSupportTicketStatus>.Succeed(item.Name, item, ChangeType.Import, Array.Empty<uSyncChange>());
 		}
 
-		public override void DeleteItem(uSupportTicketStatus item) => _ticketStatusService.Delete(item.Id);
-		public override uSupportTicketStatus FindItem(int id) => null;
-		public override uSupportTicketStatus FindItem(Guid key) => _ticketStatusService.Get(key);
-		public override uSupportTicketStatus FindItem(string alias) => _ticketStatusService.GetAll().FirstOrDefault(x => x.Alias == alias);
+		public override Task DeleteItemAsync(uSupportTicketStatus item) { _ticketStatusService.Delete(item.Id); return Task.CompletedTask; }
+		public override Task<uSupportTicketStatus?> FindItemAsync(Guid key) => Task.FromResult<uSupportTicketStatus?>(_ticketStatusService.Get(key));
+		public override Task<uSupportTicketStatus?> FindItemAsync(string alias) => Task.FromResult(_ticketStatusService.GetAll().FirstOrDefault(x => x.Alias == alias));
 		public override string ItemAlias(uSupportTicketStatus item) => item.Alias;
 		public override Guid ItemKey(uSupportTicketStatus item) => item.Id;
-		public override void SaveItem(uSupportTicketStatus item) => _ticketStatusService.Update(item.ConvertDtoToSchema());
+		public override Task SaveItemAsync(uSupportTicketStatus item) { _ticketStatusService.Update(item.ConvertDtoToSchema()); return Task.CompletedTask; }
 	}
 }

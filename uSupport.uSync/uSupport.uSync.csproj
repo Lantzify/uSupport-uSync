@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <RootNamespace>uSupport.uSync</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
 		<ItemGroup>
-				<PackageReference Include="uSupport" Version="2.2.0" />
-				<PackageReference Include="uSync.Core" Version="13.0.0" />
-				<PackageReference Include="uSync.BackOffice" Version="13.0.0" />
+				<PackageReference Include="uSupport" Version="17.0.0" />
+				<PackageReference Include="uSync.Core" Version="17.0.0" />
+				<PackageReference Include="uSync.BackOffice" Version="17.0.0" />
 		</ItemGroup>
 
 		<PropertyGroup>

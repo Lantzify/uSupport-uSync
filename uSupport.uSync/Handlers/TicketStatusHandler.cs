@@ -9,6 +9,8 @@ using uSync.BackOffice.Services;
 using Microsoft.Extensions.Logging;
 using uSupport.Services.Interfaces;
 using uSync.BackOffice.SyncHandlers;
+using uSync.BackOffice.SyncHandlers.Models;
+using uSync.BackOffice.SyncHandlers.Interfaces;
 using uSync.BackOffice.Configuration;
 
 namespace uSupport_uSync.Handlers
@@ -19,65 +21,40 @@ namespace uSupport_uSync.Handlers
 		 INotificationHandler<UpdateTicketStatusNotification>,
 		 INotificationHandler<DeleteTicketStatusNotification>
 	{
-		private readonly IuSupportTicketStatusService _ticketStatusService;
+		private readonly IuSupportTicketStatusService _service;
 
-		public TicketStatusHandler(IuSupportTicketStatusService ticketStatusService,
-			ILogger<SyncHandlerRoot<uSupportTicketStatus, uSupportTicketStatus>> logger, AppCaches appCaches, IShortStringHelper shortStringHelper, SyncFileService syncFileService, uSyncEventService mutexService, uSyncConfigService uSyncConfig, ISyncItemFactory itemFactory) : base(logger, appCaches, shortStringHelper, syncFileService, mutexService, uSyncConfig, itemFactory)
+		public TicketStatusHandler(IuSupportTicketStatusService service,
+			ILogger<SyncHandlerRoot<uSupportTicketStatus, uSupportTicketStatus>> logger, AppCaches appCaches, IShortStringHelper shortStringHelper, ISyncFileService syncFileService, ISyncEventService mutexService, ISyncConfigService uSyncConfig, ISyncItemFactory itemFactory) : base(logger, appCaches, shortStringHelper, syncFileService, mutexService, uSyncConfig, itemFactory)
 		{
-			_ticketStatusService = ticketStatusService;
+			_service = service;
 		}
 
 		public override string Group => "uSupport";
 
-		public override IEnumerable<uSyncAction> ExportAll(uSupportTicketStatus parent, string folder, HandlerSettings config, SyncUpdateCallback callback)
-		{
-			var actions = new List<uSyncAction>();
-			foreach (var item in _ticketStatusService.GetAll())
-				actions.AddRange(Export(item, folder, config));
-
-			return actions;
-		}
-
-		private bool ShouldProcess()
-		{
-			if (_mutexService.IsPaused || !DefaultConfig.Enabled)
-				return false;
-
-			return true;
-		}
-
-		public void Handle(CreateTicketStatusNotification notification)
-		{
-			if (!ShouldProcess())
-				return;
-
-			var attempts = Export(notification.TicketStatus, Path.Combine(rootFolder, DefaultFolder), DefaultConfig);
-			foreach (var attempt in attempts.Where(x => x.Success))
-				CleanUp(notification.TicketStatus, attempt.FileName, Path.Combine(rootFolder, DefaultFolder));
-		}
-
-		public void Handle(UpdateTicketStatusNotification notification)
-		{
-			if (!ShouldProcess())
-				return;
-
-			var attempts = Export(notification.TicketStatus, Path.Combine(rootFolder, DefaultFolder), DefaultConfig);
-			foreach (var attempt in attempts.Where(x => x.Success))
-				CleanUp(notification.TicketStatus, attempt.FileName, Path.Combine(rootFolder, DefaultFolder));
-		}
+		public void Handle(CreateTicketStatusNotification notification) => ExportItem(notification.TicketStatus);
+		public void Handle(UpdateTicketStatusNotification notification) => ExportItem(notification.TicketStatus);
 
 		public void Handle(DeleteTicketStatusNotification notification)
 		{
-			if (!ShouldProcess())
-				return;
-
-			ExportDeletedItem(notification.TicketStatus, Path.Combine(rootFolder, DefaultFolder), DefaultConfig);
+			if (ShouldProcessEvent())
+				ExportDeletedItemAsync(notification.TicketStatus, GetDefaultHandlerFolders(), DefaultConfig).GetAwaiter().GetResult();
 		}
 
-		protected override IEnumerable<uSyncAction> DeleteMissingItems(uSupportTicketStatus parent, IEnumerable<Guid> keysToKeep, bool reportOnly) => Enumerable.Empty<uSyncAction>();
-		protected override IEnumerable<uSupportTicketStatus> GetChildItems(uSupportTicketStatus parent) => Enumerable.Empty<uSupportTicketStatus>();
-		protected override IEnumerable<uSupportTicketStatus> GetFolders(uSupportTicketStatus parent) => Enumerable.Empty<uSupportTicketStatus>();
-		protected override uSupportTicketStatus GetFromService(uSupportTicketStatus item) => _ticketStatusService.Get(item.Id) ?? new uSupportTicketStatus();
+		private void ExportItem(uSupportTicketStatus item)
+		{
+			if (!ShouldProcessEvent())
+				return;
+
+			var folders = GetDefaultHandlerFolders();
+			foreach (var attempt in ExportAsync(item, folders, DefaultConfig).GetAwaiter().GetResult())
+				if (attempt.Success && attempt.FileName != null)
+					CleanUpAsync(item, attempt.FileName, folders.Last()).GetAwaiter().GetResult();
+		}
+
+		protected override Task<IEnumerable<uSyncAction>> DeleteMissingItemsAsync(uSupportTicketStatus parent, IEnumerable<Guid> keysToKeep, bool reportOnly) => Task.FromResult(Enumerable.Empty<uSyncAction>());
+		protected override Task<IEnumerable<uSupportTicketStatus>> GetChildItemsAsync(uSupportTicketStatus? parent) => Task.FromResult(parent == null ? _service.GetAll() : Enumerable.Empty<uSupportTicketStatus>());
+		protected override Task<IEnumerable<uSupportTicketStatus>> GetFoldersAsync(uSupportTicketStatus? parent) => Task.FromResult(Enumerable.Empty<uSupportTicketStatus>());
+		protected override Task<uSupportTicketStatus?> GetFromServiceAsync(uSupportTicketStatus? item) => Task.FromResult<uSupportTicketStatus?>(item == null ? null : _service.Get(item.Id));
 		protected override string GetItemName(uSupportTicketStatus item) => item.Name;
 	}
 }

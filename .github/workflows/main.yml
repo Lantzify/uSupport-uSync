@@ -7,13 +7,23 @@ permissions:
   contents: read
 jobs:
   release_name:
+    permissions:
+      id-token: write
     name: Publish NuGet Package
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
       - name: Build project
         run: dotnet build --configuration Release uSupport.uSync
       - name: Package files
         run: dotnet pack --configuration Release  uSupport.uSync /p:Version=${{github.ref_name}}
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{secrets.NUGET_USER}}
       - name: Publish the package
         run: dotnet nuget push uSupport.uSync/build/Release/uSupport.uSync.${{github.ref_name}}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{secrets.PRIVATE_NUGET_KEY }}
